@@ -78,8 +78,7 @@ func main() {
 	start = time.Now()
 	for _, auction := range items {
 		wg.Add(1)
-		var item SkyblockItemNBT
-		go DecodeNBT(auction.ItemBytes, &item, false)
+		go parseItem(auction)
 	}
 
 	wg.Wait()
@@ -98,8 +97,13 @@ func getAhPage(page int) (*AuctionPage, error) {
 	return &data, nil
 }
 
-func DecodeNBT(in any, data *SkyblockItemNBT, isBytes bool) error {
+func parseItem(item AuctionItem) {
 	defer wg.Done()
+	var nbt SkyblockItemNBT
+	DecodeNBT(item.ItemBytes, &nbt, false)
+}
+
+func DecodeNBT(in any, data *SkyblockItemNBT, isBytes bool) error {
 	var z []byte
 	if !isBytes {
 		z, _ = base64.StdEncoding.DecodeString(in.(string))
