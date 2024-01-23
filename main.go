@@ -45,11 +45,17 @@ type AuctionPage struct {
 var (
 	wg sync.WaitGroup
 	gzipReaderPool sync.Pool
+	bufferPool     sync.Pool
+	itemChan      = make(chan AuctionItem, 100)
 )
 
 func init() {
 	gzipReaderPool.New = func() interface{} {
 		return new(gzip.Reader)
+	}
+
+	bufferPool.New = func() interface{} {
+		return make([]byte, 32*1024) // Adjust the buffer size based on your needs
 	}
 }
 
@@ -63,6 +69,7 @@ func main() {
 		panic(err)
 	}
 	items = append(items, page.Auctions...)
+	itemChan = make(chan AuctionItem, page.TotalAuctions)
 
 	for i := 1; i < page.TotalPages; i++ {
 		page, err := getAhPage(i)
@@ -72,7 +79,7 @@ func main() {
 		items = append(items, page.Auctions...)
 	}
 
-	fmt.Println("ah fetched in ", time.Since(start))
+	fmt.Println("ah fetched in", time.Since(start))
 
 	fmt.Println("decoding nbt")
 	start = time.Now()
@@ -81,8 +88,12 @@ func main() {
 		go parseItem(auction)
 	}
 
-	wg.Wait()
-	fmt.Println("decoded nbt in ", time.Since(start))
+	go func() {
+		wg.Wait()
+		close(itemChan)
+	}()
+
+	fmt.Println("decoded nbt in", len(itemChan), time.Since(start))
 }
 
 func getAhPage(page int) (*AuctionPage, error) {
@@ -101,6 +112,8 @@ func parseItem(item AuctionItem) {
 	defer wg.Done()
 	var nbt SkyblockItemNBT
 	DecodeNBT(item.ItemBytes, &nbt, false)
+
+	itemChan <- item
 }
 
 func DecodeNBT(in any, data *SkyblockItemNBT, isBytes bool) error {
@@ -110,7 +123,13 @@ func DecodeNBT(in any, data *SkyblockItemNBT, isBytes bool) error {
 	} else {
 		z = in.([]byte)
 	}
+
 	reader := bytes.NewReader(z)
+
+	// Reuse buffer from the pool
+	buffer := bufferPool.Get().([]byte)
+	defer bufferPool.Put(buffer)
+
 	gzreader := gzipReaderPool.Get().(*gzip.Reader)
 	defer gzipReaderPool.Put(gzreader)
 
