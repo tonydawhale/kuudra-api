@@ -4,10 +4,12 @@ import { html } from '@elysiajs/html'
 import { verifyKey } from 'discord-interactions';
 
 import './database';
+import './discord';
 import logger from './logger';
 import { setDefaults } from './hooks';
 import { setupCron } from './cron';
 import * as routes from './routes';
+import handleInteraction from './discord';
 
 export const app = new Elysia()
     .use(cors())
@@ -23,7 +25,7 @@ export const app = new Elysia()
         set.headers['X-Updates-In'] = ((cron.refreshAuctions.msToNext() as number) / 1000 + 15).toFixed(0);
     })
     .use(html())
-    .group('/kuudra', (app) =>
+    .group('/api', (app) =>
         app
             .get('/', () => `
                 <html lang='en'>
@@ -45,17 +47,18 @@ export const app = new Elysia()
                     </body>
                 </html>`
             )
-            .get('/tasks', ({ store: { cron }}) => ({ updatesIn: (cron.refreshAuctions.msToNext() as number) / 1000 }))
+            .get('/tasks', ({ store: { cron } }) => ({ updatesIn: (cron.refreshAuctions.msToNext() as number) / 1000 }))
             .get('/item_price', routes.getItemPrice)
             .get('/attribute_price', routes.getAttributePrice)
-            .post('/interactions', routes.interactions, 
-                { 
-                    beforeHandle: ({ set, request }) => {
+            .get('/stored_attributes', routes.getStoredAttributes)
+            .post('/interactions', handleInteraction,
+                {
+                    beforeHandle: async ({ set, request, body }) => {
                         if (!Bun.env.DISCORD_CLIENT_PUBLIC_KEY) throw new Error('DISCORD_CLIENT_PUBLIC_KEY is not set');
                         const signature = request.headers.get('X-Signature-Ed25519');
                         const timestamp = request.headers.get('X-Signature-Timestamp');
                         if (!signature || !timestamp) throw new Error('Invalid request');
-                        const isValidRequest = verifyKey(JSON.stringify(request.body), signature, timestamp, Bun.env.DISCORD_CLIENT_PUBLIC_KEY);
+                        const isValidRequest = verifyKey(JSON.stringify(body), signature, timestamp, Bun.env.DISCORD_CLIENT_PUBLIC_KEY);
                         if (!isValidRequest) {
                             set.status = 401;
                             return { error: 'Invalid request' };

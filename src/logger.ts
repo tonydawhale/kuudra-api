@@ -20,7 +20,7 @@ class Logger {
         );
     }
     webhook(message: string, error?: boolean) {
-        fetch(Bun.env.WEBHOOK_URL as string, {
+        fetch(Bun.env.DISCORD_WEBHOOK_URL as string, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
