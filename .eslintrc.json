@@ -1,0 +1,25 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "rules": {
+      "quotes": [2, "single", { "avoidEscape": true }],
+      "@typescript-eslint/consistent-type-imports": "error",
+      "@typescript-eslint/no-unused-vars": "off",
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          "vars": "all",
+          "varsIgnorePattern": "^_",
+          "args": "after-used",
+          "argsIgnorePattern": "^_"
+        }
+      ]
+    },
+    "plugins": ["simple-import-sort", "@typescript-eslint", "unused-imports"],
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": "latest"
+    }
+  }

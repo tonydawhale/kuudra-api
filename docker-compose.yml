@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  api:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  db:
+    image: mongo:latest
+    ports:
+      - 20001:20001
+    environment:
+      MONGO_INITDB_DATABASE: kuudra
+    volumes:
+      - mongo-data:/data/db
+    command: mongod --quiet --logpath /dev/null --port 20001
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  mongo-data: {}
