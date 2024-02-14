@@ -49,6 +49,7 @@ export const app = new Elysia()
             )
             .get('/tasks', ({ store: { cron } }) => ({ updatesIn: (cron.refreshAuctions.msToNext() as number) / 1000 }))
             .get('/item_price', routes.getItemPrice)
+            .get('/shard_price', routes.getShardPrice)
             .get('/attribute_price', routes.getAttributePrice)
             .get('/stored_attributes', routes.getStoredAttributes)
             .post('/interactions', handleInteraction,

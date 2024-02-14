@@ -4,6 +4,8 @@ services:
   api:
     build: .
     restart: unless-stopped
+    ports:
+      - 20000:20000
     env_file:
       - .env
     depends_on:
