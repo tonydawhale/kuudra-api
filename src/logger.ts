@@ -34,14 +34,14 @@ class Logger {
                         footer: {
                             text: `tdw kuudra api v${require('../package.json').version}`,
                         },
-                    }
+                    },
                 ],
                 allowed_mentions: {
-                    users: ['244181430085746688']
+                    users: ['244181430085746688'],
                 },
                 content: error ? '<@!244181430085746688>' : undefined,
-            })
-        })
+            }),
+        });
     }
 }
 

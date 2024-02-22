@@ -1,7 +1,7 @@
 {
   "name": "kuudra-api",
   "module": "index.ts",
-  "version": "0.1",
+  "version": "0.2",
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "build": "bun build src/index.ts",
@@ -10,7 +10,7 @@
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "format": "prettier --check --ignore-path .gitignore ./src/**/*.ts",
-    "format:fix": "prettier --write --ignore-path .gitignore ./src/**/*.ts"
+    "format:fix": "prettier --write --ignore-path .gitignore ./src/**"
   },
   "type": "module",
   "devDependencies": {

@@ -17,7 +17,7 @@ type StoredAuctionItemHistory = {
         timestamp: number;
         price: number;
     }[];
-}
+};
 
 type HypixelAhResponse = {
     success: boolean;
@@ -57,5 +57,5 @@ export {
     HypixelAhResponse,
     HypixelRecentlyEndedResponse,
     StoredAuctionItem,
-    StoredAuctionItemHistory
-}
+    StoredAuctionItemHistory,
+};
