@@ -158,7 +158,14 @@ const refreshAuctions = async () => {
     let items: HypixelAhItem[] = [];
 
     do {
-        const data = await fetchAhPage(currentPage);
+        const data = await fetchAhPage(currentPage)
+            .catch((err) => {
+                logger.webhook(`failed to fetch page ${currentPage}: ${err}`, true)
+                return null;
+        });
+
+        if (!data) continue;
+
         maxPage = data.totalPages;
         items = items.concat(data.auctions);
         currentPage++;
