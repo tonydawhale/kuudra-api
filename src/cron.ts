@@ -22,7 +22,7 @@ export const setupCron = (app: Elysia) =>
             cron({
                 name: 'clearEndedAuctions',
                 timezone: 'America/New_York',
-                pattern: '*/30 * * * * *',
+                pattern: '* * * * *',
                 run: clearAuctions,
             }),
         )
