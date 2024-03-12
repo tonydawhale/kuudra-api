@@ -46,6 +46,7 @@ export const app = new Elysia()
                     </body>
                 </html>`,
             )
+            .get('/status', (_) => ({ status: 'ok' }))
             .get('/item_price', routes.getItemPrice)
             .get('/shard_price', routes.getShardPrice)
             .get('/attribute_price', routes.getAttributePrice)
