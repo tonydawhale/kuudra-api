@@ -10,6 +10,8 @@ RUN bun install --production
 COPY src src
 COPY tsconfig.json .
 
+HEALTHCHECK CMD curl --fail http://localhost:20000/api/status || exit 1
+
 ENV NODE_ENV production
 CMD ["bun", "src/index.ts"]
 
