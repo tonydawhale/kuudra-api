@@ -7,25 +7,19 @@ import './database';
 import './discord';
 import logger from './logger';
 import { setDefaults } from './hooks';
-import { setupCron } from './cron';
 import * as routes from './routes';
 import handleInteraction from './discord';
 
 export const app = new Elysia()
     .use(cors())
     .use(setDefaults)
-    .use(setupCron)
-    .onRequest(({ store: { cron }, set }) => {
+    .onRequest(({ set }) => {
         set.headers['Access-Control-Allow-Origin'] = '*';
         set.headers['Access-Control-Allow-Headers'] = '*';
         set.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS';
         set.headers['Access-Control-Max-Age'] = '86400';
         set.headers['Cache-Control'] = 'public, max-age=60 s-maxage=60';
         set.headers['X-Powered-By'] = 'tdw-kuudra-api';
-        set.headers['X-Updates-In'] = (
-            (cron.refreshAuctions.msToNext() as number) / 1000 +
-            15
-        ).toFixed(0);
     })
     .use(html())
     .group('/api', (app) =>
@@ -52,9 +46,6 @@ export const app = new Elysia()
                     </body>
                 </html>`,
             )
-            .get('/tasks', ({ store: { cron } }) => ({
-                updatesIn: (cron.refreshAuctions.msToNext() as number) / 1000,
-            }))
             .get('/item_price', routes.getItemPrice)
             .get('/shard_price', routes.getShardPrice)
             .get('/attribute_price', routes.getAttributePrice)
