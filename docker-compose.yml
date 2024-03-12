@@ -2,18 +2,29 @@ version: '3.9'
 
 services:
   api:
-    build: .
+    build: ./api
     restart: unless-stopped
     ports:
       - 20000:20000
     env_file:
-      - .env
+      - ./api/.env
     depends_on:
       - db
+      - mongo
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
   db:
+    build: ./database
+    restart: unless-stopped
+    env_file:
+      - ./database/.env
+    depends_on:
+      - mongo
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  mongo:
     image: mongo:latest
     ports:
       - 20001:20001
