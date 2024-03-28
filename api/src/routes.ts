@@ -110,7 +110,7 @@ export const getItemPrice = async (ctx: Context) => {
 
     if (data.length === 0) {
         ctx.set.status = 404;
-        return { error: 'no results found' };
+        return;
     }
 
     return data[0];
