@@ -1,15 +1,10 @@
 import { Elysia } from 'elysia';
 import logger from './logger';
+import db from './database';
+import { RouteAnalytics } from './types';
 
 export const setDefaults = (app: Elysia) =>
     app
-        .onResponse((handler) => {
-            if (Bun.env.NODE_ENV !== 'test') {
-                logger.info(
-                    `[${handler.request.method}] ${handler.request.url} - ${(handler.set.status ||= 500)}`,
-                );
-            }
-        })
         .onError((handler) => {
             if (handler.code === 'NOT_FOUND') {
                 handler.set.status = 404;
@@ -32,5 +27,23 @@ export const setDefaults = (app: Elysia) =>
                     };
                 }
                 return 'Service unavailable. Please come back later.';
+            }
+        })
+        .onResponse(async (handler) => {
+            if (Bun.env.NODE_ENV !== 'test') {
+                logger.info(
+                    `[${handler.request.method}] ${handler.request.url} - ${(handler.set.status ||= 500)}`,
+                );
+
+                await db.collection<RouteAnalytics>('analytics').updateOne(
+                    { route: new URL(handler.request.url).pathname },
+                    {
+                        $inc: {
+                            'analytics.total': 1,
+                            [`analytics.per_status.${handler.set.status}`]: 1,
+                        }
+                    },
+                    { upsert: true },
+                );
             }
         });

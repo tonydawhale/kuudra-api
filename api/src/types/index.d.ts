@@ -52,10 +52,19 @@ type HypixelAhItem = {
     uuid: string;
 };
 
+type RouteAnalytics = {
+    route: string;
+    analytics: {
+        total: number;
+        per_status: Record<number, number>;
+    }
+}
+
 export {
     HypixelAhItem,
     HypixelAhResponse,
     HypixelRecentlyEndedResponse,
     StoredAuctionItem,
     StoredAuctionItemHistory,
+    RouteAnalytics,
 };
