@@ -1,5 +1,5 @@
 import { Document, MongoClient } from 'mongodb';
-import { StoredAuctionItem } from './types';
+import { RouteAnalytics, StoredAuctionItem } from './types';
 import { ItemCategory, ItemFamily, ItemType } from './constants';
 import { findRequiredLvl1Attributes, toLvl1Attributes } from './util';
 import logger from './logger';
@@ -299,5 +299,15 @@ export const getItemPrice = async (
 
     return result;
 };
+
+export const getRouteAnalytics = async (route?: string) => {
+    if (route) {
+        return await db.collection<RouteAnalytics>('analytics').findOne({
+            route,
+        }, { projection: { _id: 0}});
+    } else {
+        return await db.collection<RouteAnalytics>('analytics').find().project({ _id: 0 }).toArray();
+    }
+}
 
 export default db;
