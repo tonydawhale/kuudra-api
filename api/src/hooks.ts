@@ -3,6 +3,13 @@ import logger from './logger';
 import db from './database';
 import { RouteAnalytics } from './types';
 
+const resolveUserAgent = (userAgent: string): string => {
+    if (userAgent.includes('Skytils/')) return 'skytils';
+    if (userAgent == 'kuudra-dev/bot') return 'bot';
+    if (userAgent == 'kuudra-dev/website') return 'website';
+    return 'other';
+}
+
 export const setDefaults = (app: Elysia) =>
     app
         .onError((handler) => {
@@ -39,8 +46,9 @@ export const setDefaults = (app: Elysia) =>
                     { route: new URL(handler.request.url).pathname },
                     {
                         $inc: {
-                            'analytics.total': 1,
-                            [`analytics.per_status.${handler.set.status}`]: 1,
+                            'total': 1,
+                            [`status.${handler.set.status}`]: 1,
+                            [`user_agents.${resolveUserAgent(handler.request.headers.get('User-Agent') ?? '')}`]: 1,
                         }
                     },
                     { upsert: true },

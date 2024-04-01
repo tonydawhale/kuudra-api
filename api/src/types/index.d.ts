@@ -54,10 +54,14 @@ type HypixelAhItem = {
 
 type RouteAnalytics = {
     route: string;
-    analytics: {
-        total: number;
-        per_status: Record<number, number>;
+    total: number;
+    user_agents: {
+        skytils: number;
+        website: number;
+        bot: number;
+        other: number;
     }
+    status: Record<string, number>;
 }
 
 export {

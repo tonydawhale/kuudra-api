@@ -47,6 +47,11 @@ export const app = new Elysia()
                 </html>`,
             )
             .get('/status', (_) => ({ status: 'ok' }))
+            .get('/analytics', routes.getRouteAnalytics, {
+                query: t.Object({
+                    route: t.Optional(t.String()),
+                })
+            })
             .get('/item_price', routes.getItemPrice)
             .get('/shard_price', routes.getShardPrice)
             .get('/attribute_price', routes.getAttributePrice)

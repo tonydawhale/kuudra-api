@@ -333,3 +333,7 @@ export const getAttributeUpgrade = async (ctx: Context) => {
 
     return result;
 };
+
+export const getRouteAnalytics = async ({query}: Context) => {
+    return await db.getRouteAnalytics(query.route).catch(console.error);
+}
