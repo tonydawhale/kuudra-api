@@ -31,19 +31,19 @@ func parseWorker(jobs <-chan HypixelAhAuction, results chan<- *StoredAuction, wg
 	}
 }
 
-func parseItems(unpasedItems []HypixelAhAuction) []StoredAuction {
+func parseItems(unparsedItems []HypixelAhAuction) []StoredAuction {
 	numWorkers := 50
 
-	jobs := make(chan HypixelAhAuction, len(unpasedItems))
-	results := make(chan *StoredAuction, len(unpasedItems))
+	jobs := make(chan HypixelAhAuction, len(unparsedItems))
+	results := make(chan *StoredAuction, len(unparsedItems))
 	var wg sync.WaitGroup
 
 	for w := 0; w < numWorkers; w++ {
 		go parseWorker(jobs, results, &wg)
 	}
 
-	wg.Add(len(unpasedItems))
-	for _, item := range unpasedItems {
+	wg.Add(len(unparsedItems))
+	for _, item := range unparsedItems {
 		jobs <- item
 	}
 	close(jobs)
@@ -51,8 +51,9 @@ func parseItems(unpasedItems []HypixelAhAuction) []StoredAuction {
 
 	items := []StoredAuction{}
 
-	for range unpasedItems {
+	for range unparsedItems {
 		item := <-results
+		
 		if item.Attributes != nil && item.Id != "" {
 			itemInfo := itemInfo.ItemMetadataMap[item.Id]
 

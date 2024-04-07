@@ -65,7 +65,15 @@ func fetchAllAuctions() []HypixelAhAuction {
 		items = append(items, *<-results...)
 	}
 
-	return items
+	binItems := []HypixelAhAuction{}
+
+	for _, item := range items {
+		if item.Bin {
+			binItems = append(binItems, item)
+		}
+	}
+
+	return binItems
 }
 
 func fetchAhPage(page int) (*HypixelAhResponse, error) {
