@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	// "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -18,9 +18,9 @@ var (
 )
 
 func init() {
-	// if err := godotenv.Load(); err != nil {
-	// 	panic(err)
-	// }
+	if err := godotenv.Load(); err != nil {
+		panic(err)
+	}
 
 	MongoURI = getEnv("MONGO_URI")
 	MongoDatabase = getEnv("MONGO_DB")

@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
     ports:
       - 20000:20000
-    # env_file:
-    #   - ./api/.env
+    env_file:
+      - .env
     depends_on:
       - db
       - mongo
@@ -17,8 +17,8 @@ services:
   db:
     build: ./database
     restart: unless-stopped
-    # env_file:
-    #   - ./database/.env
+    env_file:
+      - .env
     depends_on:
       - mongo
     extra_hosts:
